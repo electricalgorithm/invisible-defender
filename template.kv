@@ -1,0 +1,821 @@
+#:import CardTransition kivy.uix.screenmanager.CardTransition
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import OneLineIconListItem kivymd.uix.list
+#:import MDList kivymd.uix.list
+#:import Joystick joystick
+#:import MDTooltip kivymd.uix.tooltip
+#:import MDBoxLayout kivymd.uix.boxlayout
+#:import theme_cls kivymd.theming.ThemableBehavior
+#:import Image kivy.uix.image.Image
+
+<TooltipMDIconButton@MDIconButton+MDTooltip>
+
+WinManager:
+    transition: CardTransition()
+    MainWindow:
+        name: "loginPanel"
+    AdminPanel:
+        name: "adminPanel"
+        id: apanel
+
+<MainWindow>:
+    MDCard:
+        orientation: "vertical"
+        padding: "20dp"
+        spacing: 20
+        size_hint: None, None
+        size: "300dp", "350dp"
+        pos_hint: {"center_x": .5, "center_y": .5}
+
+        MDLabel:
+            text: "IUC ThermoelecLab"
+            theme_text_color: "Primary"
+            halign: "center"
+            valign: "top"
+            font_style: "H4"
+            size_hint_y: None
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: "-1dp"
+            adaptive_height: True
+
+            MDTextField:
+                id: usernameID
+                hint_text: "Username@IP:port"
+                multiline: False
+
+            MDTextField:
+                id: passwordID
+                hint_text: "Password"
+                password: True
+                multiline: False
+
+        MDRaisedButton:
+            text: "Get In"
+            text_color: 1,1,1,1
+            md_bg_color: .33, .33, .33, 1
+            pos_hint: {"center_x": .5, "center_y": .5}
+            on_release:
+                app.root.current = "adminPanel" if not root.login() else "loginPanel"
+                root.manager.transition.direction = "up"
+
+<AdminPanel>:
+    BoxLayout:
+        orientation: "horizontal"
+        BoxLayout:
+            size_hint_max_x: "45dp"
+            size_hint_min_x: "45dp"
+            MDGridLayout:
+                rows: 5
+                adaptive_width: True
+                md_bg_color: app.theme_cls.primary_dark
+
+                TooltipMDIconButton:
+                    id: temp_shield_toggle_icon
+                    icon: "layers-off"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    tooltip_text: "Temperature Shield"
+                    on_release: root.temp_shield_toggle()
+                TooltipMDIconButton:
+                    id: jammer_toggle_icon
+                    icon: "access-point-network-off"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    tooltip_text: "Jammer"
+                    on_release: root.jammer_toggle()
+                TooltipMDIconButton:
+                    id: car_light_toggle_icon
+                    icon: "car-light-fog"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    tooltip_text: "Car Light"
+                    on_release: root.car_light_toggle()
+                TooltipMDIconButton:
+                    id: car_engine_startstop_icon
+                    icon: "engine-off"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    tooltip_text: "Car Engine"
+                    on_release: root.car_engine_startstop()
+                TooltipMDIconButton:
+                    id: quit_icon
+                    icon: "close-circle"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    tooltip_text: "Exit the Program"
+                    on_release: root.quit()
+
+        BoxLayout:
+            Image:
+                id: live_photo
+                allow_stretch: True
+                keep_ratio: False
+                size_hint_y: None
+                size_hint_x: None
+                width: self.parent.width
+                height: self.parent.height
+
+        MDGridLayout:
+            md_bg_color: app.theme_cls.primary_dark
+            size_hint_x: 0.35
+            size_hint_min_x: "100dp"
+            size_hint_max_x: "175dp"
+            rows: 2
+            ScrollView:
+                MDList:
+                    OneLineIconListItem:
+                        text: "%89.7" if self.width > 120 else ""
+                        IconLeftWidget:
+                            icon: "battery-80"
+                    OneLineIconListItem:
+                        text: "23'C" if self.width > 120 else ""
+                        IconLeftWidget:
+                            icon: "weather-sunny"
+                    OneLineIconListItem:
+                        text: "47'C" if self.width > 120 else ""
+                        IconLeftWidget:
+                            icon: "car-defrost-rear"
+                    OneLineIconListItem:
+                        text: "PR: 15'C" if self.width > 120 else ""
+                        IconLeftWidget:
+                            icon: "border-right"
+                    OneLineIconListItem:
+                        text: "PL: 13'C" if self.width > 120 else ""
+                        IconLeftWidget:
+                            icon: "border-left"
+                    OneLineIconListItem:
+                        text: "PT: 19'C" if self.width > 120 else ""
+                        IconLeftWidget:
+                            icon: "border-top"
+                    OneLineIconListItem:
+                        text: "PB: 10'C" if self.width > 120 else ""
+                        IconLeftWidget:
+                            icon: "border-bottom"
+
+            BoxLayout:
+                size_hint_y: 1
+                Joystick:
+                    id: directionjoystick
+                    size_hint_x: .65
+                    size_hint_y: .65
+                    size_hint_max: "175dp", "175dp"
+                    pos_hint : {"center_x": .5, "center_y": .5}
+                    outer_size: 1.05
+                    inner_size: 1.05
+                    pad_size:   0.5
+                    outer_line_width: 0.1
+                    inner_line_width: 0.1
+                    pad_line_width:   0.1
+                    outer_background_color: app.theme_cls.bg_normal
+                    outer_line_color:       app.theme_cls.divider_color
+                    inner_background_color: app.theme_cls.bg_normal
+                    inner_line_color:       app.theme_cls.bg_normal
+                    pad_background_color:   app.theme_cls.primary_dark
+                    pad_line_color:         app.theme_cls.primary_dark
+
+<MenuPanel>:
+    on_pre_enter:
+        toolbar_settings.remove_notch()
+        toolbar_settings_2.remove_notch()
+        self.update_logs()
+        self.update_peltiers()
+
+    NavigationLayout:
+        ScreenManager:
+            id: screen_manager
+            transition: NoTransition()
+            Screen:
+                name: "general_settings"
+                BoxLayout:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        spacing: 5
+                        size_hint_x: 0.6
+                        orientation: "vertical"
+                        BoxLayout:
+                            spacing: 5
+                            size_hint_y: 0.3
+                            BoxLayout:
+                                id: general_settings_box
+                                size_hint_x: 0.4
+                                MDCard:
+                                    md_bg_color: 1, 1, 1, 0.9
+                                    padding: "8dp"
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    size_hint: None, None
+                                    size: general_settings_box.width-2, general_settings_box.height-2
+                                    BoxLayout:
+                                        orientation: "vertical"
+                                        MDLabel:
+                                            text: "System"
+                                            font_size: "18pt"
+                                        MDGridLayout:
+                                            cols: 2
+                                            MDLabel:
+                                                text: "Internet:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: internet_status_text
+                                                text: "Active"
+                                                color: 0, 0.4, 0, 1
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                text: "Server:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: server_status_text
+                                                text: "Active"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Object:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: object_status_text
+                                                text: "Error!"
+                                                font_size: "11pt"
+                                                color: 0.6, 0, 0, 1
+
+                            BoxLayout:
+                                id: battery_status_box
+                                size_hint_x: 0.6
+                                MDCard:
+                                    md_bg_color: 1, 1, 1, 0.9
+                                    padding: "8dp"
+                                    pos_hint: {"center_x": .5, "center_y": .5}
+                                    size_hint: None, None
+                                    size: battery_status_box.width-2, battery_status_box.height-2
+                                    BoxLayout:
+                                        orientation: "vertical"
+                                        MDLabel:
+                                            text: "Battery"
+                                            font_size: "18pt"
+                                        MDGridLayout:
+                                            cols: 4
+                                            MDLabel:
+                                                text: "Health:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: health_status_text
+                                                text: "%99"
+                                                color: 0, 0.4, 0, 1
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                text: "Status:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: battery_status_text
+                                                text: "Active"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Full:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: full_mah_status_text
+                                                text: "1732"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Design:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: designed_mah_status_text
+                                                text: "1750"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Current:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: current_mah_status_text
+                                                text: "1237"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Battery:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: battery_perc_status_text
+                                                text: "%71"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+
+
+                        BoxLayout:
+                            spacing: 5
+                            size_hint_y: 0.7
+                            orientation: "horizontal"
+                            BoxLayout:
+                                id: object_status_box
+                                size_hint_x: 0.5
+                                MDCard:
+                                    md_bg_color: 1, 1, 1, 0.9
+                                    padding: "8dp"
+                                    pos_hint: {"center_x": .5, "top": 1}
+                                    size_hint: None, None
+                                    size: object_status_box.width-2, object_status_box.height - (toolbar_settings.height + 2)
+                                    BoxLayout:
+                                        orientation: "vertical"
+                                        MDLabel:
+                                            size_hint_y: 0.2
+                                            text: "Object"
+                                            font_size: "18pt"
+                                        MDGridLayout:
+                                            size_hint_y: 0.8
+                                            cols: 2
+                                            MDLabel:
+                                                text: "I/E Heat Sensors:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: internal_external_heat_sensor_status_text
+                                                text: "A, A"
+                                                color: 0, 0.4, 0, 1
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                text: "Motors:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: motors_status_text
+                                                text: "A, A, A, E!"
+                                                font_size: "11pt"
+                                                color: 0.6, 0, 0, 1
+                                            MDLabel:
+                                                text: "Temp. Shield:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: temperature_shield_status_text
+                                                text: "Error!"
+                                                font_size: "11pt"
+                                                color: 0.6, 0, 0, 1
+                                            MDLabel:
+                                                text: "Jammer:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: jammer_status_text
+                                                text: "Passive"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Logger:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: logger_status_text
+                                                text: "Active"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                            BoxLayout:
+                                id: camera_status_box
+                                size_hint_x: 0.5
+                                MDCard:
+                                    md_bg_color: 1, 1, 1, 0.9
+                                    padding: "8dp"
+                                    pos_hint: {"center_x": .5, "top": 1}
+                                    size_hint: None, None
+                                    size: camera_status_box.width-2, camera_status_box.height - (toolbar_settings.height + 2)
+                                    BoxLayout:
+                                        orientation: "vertical"
+                                        MDLabel:
+                                            size_hint_y: 0.2
+                                            text: "Camera"
+                                            font_size: "18pt"
+                                        MDGridLayout:
+                                            size_hint_y: 0.8
+                                            cols: 2
+                                            MDLabel:
+                                                text: "Status:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: camera_status_text
+                                                text: "Active"
+                                                color: 0, 0.4, 0, 1
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                text: "Conn.:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: camera_connection_status_text
+                                                text: "Active"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Stored:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: camera_stored_status_text
+                                                text: "1.4GB"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Uploading:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: camera_uploading_status_text
+                                                text: "Active"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                                            MDLabel:
+                                                text: "Transfer Rate:"
+                                                font_size: "11pt"
+                                            MDLabel:
+                                                id: camera_transfer_rate_status_text
+                                                text: "3.6MB/s"
+                                                font_size: "11pt"
+                                                color: 0, 0.4, 0, 1
+                    MDBoxLayout:
+                        padding: 10
+                        spacing: 5
+                        size_hint_x: 0.4
+                        orientation: "vertical"
+                        MDLabel:
+                            color: 1,1,1,1
+                            halign: "left"
+                            size_hint_y: 0.1
+                            text: "Latest Logs"
+                            font_size: "18pt"
+                        ScrollView:
+                            Label:
+                                id: logs_text
+                                size_hint_y: None
+                                text_size: self.width, None
+                                height: self.texture_size[1]
+                                text: ""
+                                markup: True
+                MDBottomAppBar:
+                    MDToolbar:
+                        md_bg_color: app.theme_cls.primary_dark
+                        id: toolbar_settings
+                        type: "bottom"
+                        icon: "double_arrow_icon.png"
+                        mode: "end"
+                        left_action_items: [["menu", lambda x: nav_drawer.toggle_nav_drawer()]]
+                        on_action_button: app.go_back()
+
+            Screen:
+                name: "peltier_details"
+                BoxLayout:
+                    orientation: "vertical"
+                    ScrollView:
+                        MDGridLayout:
+                            id: temp_shield_grid
+                            cols: 3
+                            padding: 10
+                            spacing: 20
+                            size_hint_y: None
+                            adaptive_height: True
+
+                            MDCard:
+                                md_bg_color: self.theme_cls.primary_dark
+                                orientation: "vertical"
+                                padding: "8dp"
+                                spacing: 10
+                                size_hint: None, None
+                                size: "160dp", "150dp"
+                                MDLabel:
+                                    id: F1_text
+                                    theme_text_color: "Primary"
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                                    font_size: "18sp"
+                                    padding_x: 10
+                                MDSeparator:
+                                    height: "2dp"
+                                MDGridLayout:
+                                    cols: 2
+                                    spacing: 10
+                                    MDLabel:
+                                        text: "Activity:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: F1_act_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Setting:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: F1_set_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Temp:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: F1_temp_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                MDGridLayout:
+                                    cols: 3
+                                    MDIconButton:
+                                        icon: "power"
+                                        on_release: app.activity_toggle("f1")
+                                    MDIconButton:
+                                        icon: "fire"
+                                        on_release: app.setting_toggle("f1", True)
+                                    MDIconButton:
+                                        icon: "snowflake"
+                                        on_release: app.setting_toggle("f1", False)
+                            MDCard:
+                                md_bg_color: self.theme_cls.primary_dark
+                                orientation: "vertical"
+                                padding: "8dp"
+                                spacing: 10
+                                size_hint: None, None
+                                size: "160dp", "150dp"
+                                MDLabel:
+                                    id: B1_text
+                                    theme_text_color: "Primary"
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                                    font_size: "18sp"
+                                    padding_x: 10
+                                MDSeparator:
+                                    height: "2dp"
+                                MDGridLayout:
+                                    cols: 2
+                                    spacing: 10
+                                    MDLabel:
+                                        text: "Activity:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: B1_act_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Setting:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: B1_set_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Temp:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: B1_temp_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                MDGridLayout:
+                                    cols: 3
+                                    MDIconButton:
+                                        icon: "power"
+                                        on_release: app.activity_toggle("b1")
+                                    MDIconButton:
+                                        icon: "fire"
+                                        on_release: app.setting_toggle("b1", True)
+                                    MDIconButton:
+                                        icon: "snowflake"
+                                        on_release: app.setting_toggle("b1", False)
+
+                            MDCard:
+                                md_bg_color: self.theme_cls.primary_dark
+                                orientation: "vertical"
+                                padding: "8dp"
+                                spacing: 10
+                                size_hint: None, None
+                                size: "160dp", "150dp"
+                                MDLabel:
+                                    id: L1_text
+                                    theme_text_color: "Primary"
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                                    font_size: "18sp"
+                                    padding_x: 10
+                                MDSeparator:
+                                    height: "2dp"
+                                MDGridLayout:
+                                    cols: 2
+                                    spacing: 10
+                                    MDLabel:
+                                        text: "Activity:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: L1_act_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Setting:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: L1_set_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Temp:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: L1_temp_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                MDGridLayout:
+                                    cols: 3
+                                    MDIconButton:
+                                        icon: "power"
+                                        on_release: app.activity_toggle("l1")
+                                    MDIconButton:
+                                        icon: "fire"
+                                        on_release: app.setting_toggle("l1", True)
+                                    MDIconButton:
+                                        icon: "snowflake"
+                                        on_release: app.setting_toggle("l1", False)
+
+                            MDCard:
+                                md_bg_color: self.theme_cls.primary_dark
+                                orientation: "vertical"
+                                padding: "8dp"
+                                spacing: 10
+                                size_hint: None, None
+                                size: "160dp", "150dp"
+                                MDLabel:
+                                    id: R1_text
+                                    theme_text_color: "Primary"
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                                    font_size: "18sp"
+                                    padding_x: 10
+                                MDSeparator:
+                                    height: "2dp"
+                                MDGridLayout:
+                                    cols: 2
+                                    spacing: 10
+                                    MDLabel:
+                                        text: "Activity:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: R1_act_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Setting:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: R1_set_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Temp:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: R1_temp_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                MDGridLayout:
+                                    cols: 3
+                                    MDIconButton:
+                                        icon: "power"
+                                        on_release: app.activity_toggle("r1")
+                                    MDIconButton:
+                                        icon: "fire"
+                                        on_release: app.setting_toggle("r1", True)
+                                    MDIconButton:
+                                        icon: "snowflake"
+                                        on_release: app.setting_toggle("r1", False)
+
+                            MDCard:
+                                md_bg_color: self.theme_cls.primary_dark
+                                orientation: "vertical"
+                                padding: "8dp"
+                                spacing: 10
+                                size_hint: None, None
+                                size: "160dp", "150dp"
+                                MDLabel:
+                                    id: T1_text
+                                    theme_text_color: "Primary"
+                                    size_hint_y: None
+                                    height: self.texture_size[1]
+                                    font_size: "18sp"
+                                    padding_x: 10
+                                MDSeparator:
+                                    height: "2dp"
+                                MDGridLayout:
+                                    cols: 2
+                                    spacing: 10
+                                    MDLabel:
+                                        text: "Activity:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: T1_act_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Setting:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: T1_set_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Primary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        text: "Temp:"
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                    MDLabel:
+                                        id: T1_temp_text
+                                        halign: "center"
+                                        valign: "middle"
+                                        theme_text_color: "Secondary"
+                                        font_size: "12sp"
+                                MDGridLayout:
+                                    cols: 3
+                                    MDIconButton:
+                                        icon: "power"
+                                        on_release: app.activity_toggle("t1")
+                                    MDIconButton:
+                                        icon: "fire"
+                                        on_release: app.setting_toggle("t1", True)
+                                    MDIconButton:
+                                        icon: "snowflake"
+                                        on_release: app.setting_toggle("t1", False)
+
+                    MDBottomAppBar:
+                        MDToolbar:
+                            md_bg_color: app.theme_cls.primary_dark
+                            id: toolbar_settings_2
+                            type: "bottom"
+                            icon: "double_arrow_icon.png"
+                            mode: "end"
+                            left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+                            on_action_button: app.go_back()
+
+        MDNavigationDrawer:
+            id: nav_drawer
+            ScrollView:
+                MDList:
+                    OneLineListItem:
+                        text: "General"
+                        on_press:
+                            root.ids.nav_drawer.set_state("close")
+                            root.ids.screen_manager.current = "general_settings"
+                    OneLineListItem:
+                        text: "Peltier Details"
+                        on_press:
+                            root.ids.nav_drawer.set_state("close")
+                            root.ids.screen_manager.current = "peltier_details"
