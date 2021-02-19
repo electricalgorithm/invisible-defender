@@ -6,6 +6,9 @@ This repository made by İstanbul Üniversitesi-Cerrahpaşa Sustainable Energy R
 
 Contributors: @electricalgorithm and @sirtryingsomething
 
+![Login Panel](https://github.com/electricalgorithm/invisible-defender/blob/main/assets-GIT/loginPanel.png?raw=true)
+![Control Panel](https://github.com/electricalgorithm/invisible-defender/blob/main/assets-GIT/controlPanel.png?raw=true)
+
 ### Last Updates (TR)
 > 19 Feb 21: Program, mobil yazılım haline çevrildi. APK hazırlandı. *GÖRÜNTÜ AKTARIMI SORUNLU!*. PyCryptodome kütüphanesine yapılmış olan değişiklikler yok edildi. Requirements.txt güncellendi. Görüntü aktarımı için mobilde opencv sorun çıkarttığından struct/pickle koduna geçildi.
 
