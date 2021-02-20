@@ -28,7 +28,7 @@ from Crypto.Cipher import PKCS1_OAEP
 
 
 # Configs and Variables #####################################################
-__version__ = "2.0.0"  # For buildozer
+__version__ = "2.0.1"  # For buildozer
 waiting_conf = []
 process_list = []
 Window.size = WINDOW_SIZE
