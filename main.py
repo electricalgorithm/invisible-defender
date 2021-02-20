@@ -28,7 +28,7 @@ from Crypto.Cipher import PKCS1_OAEP
 
 
 # Configs and Variables #####################################################
-__version__ = "2.0.1"  # For buildozer
+__version__ = "2.0.2"  # For buildozer
 waiting_conf = []
 process_list = []
 Window.size = WINDOW_SIZE
@@ -289,9 +289,9 @@ class AdminPanel(Screen):
 
     def change_frame(self, frame, dt):
         # create a Texture the correct size and format for the frame
-        texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
+        texture = Texture.create(size=(160, 120), colorfmt='rgb')
         # copy the frame data into the texture
-        texture.blit_buffer(frame.tobytes(order=None), colorfmt='bgr', bufferfmt='ubyte')
+        texture.blit_buffer(frame, colorfmt='rgb', bufferfmt='ubyte')
         texture.flip_vertical()
         self.ids.live_photo.texture = texture
 
@@ -345,9 +345,6 @@ class AdminPanel(Screen):
             frame = data[:frame_size]
             data = data[frame_size:]
 
-            # Unpacking the frame with pickle module.
-            frame = pickle.loads(frame)
-
             # Printing the frame
             Clock.schedule_once(partial(self.change_frame, frame))
 
@@ -357,7 +354,7 @@ class AdminPanel(Screen):
         if not msg_code:
             throw("ERROR", "[1] Sending tempshield_status data failed!", "")
             return False
-        if tempshield_status is not True:
+        if not tempshield_status:
             self.ids.temp_shield_toggle_icon.icon = "layers"
             tempshield_status = not tempshield_status
         else:
@@ -371,7 +368,7 @@ class AdminPanel(Screen):
         if not msg_code:
             throw("ERROR", "[2] Sending jammer_status data failed!", "")
             return False
-        if jammer_status is not True:
+        if not jammer_status:
             self.ids.jammer_toggle_icon.icon = "access-point-network"
             jammer_status = not jammer_status
         else:
@@ -385,7 +382,7 @@ class AdminPanel(Screen):
         if not msg_code:
             throw("ERROR", "[3] Sending light_status data failed!", "")
             return False
-        if light_status is not True:
+        if not light_status:
             self.ids.car_light_toggle_icon.icon = "car-light-high"
             light_status = not light_status
         else:
@@ -399,7 +396,7 @@ class AdminPanel(Screen):
         if not msg_code:
             throw("ERROR", "[4] Sending car_status data failed!", "")
             return False
-        if car_status is not True:
+        if not car_status:
             self.ids.car_engine_startstop_icon.icon = "engine"
             car_status = not car_status
         else:
@@ -452,12 +449,12 @@ class MainApp(MDApp):
         # It means that third and fourth region in coordinate plane will be start
         # with zero.
         # Ex. 190* turns 10*, 340* turns 160
-        if 4 <= a <= 14 and engine_status[1] is not a and engine_status[0] is not 0:
+        if 4 <= a <= 14 and engine_status[1] != a and engine_status[0] != 0:
             if send(f"direction_angle/{a}"):
                 engine_status[1] = a
             else:
                 throw("ERROR", "[C5] Sending forward direction_angle data failed!", "")
-        elif 32 >= a >= 22 and engine_status[1] is not (36 - a) and engine_status[0] is not 0:
+        elif 32 >= a >= 22 and engine_status[1] != (36 - a) and engine_status[0] != 0:
             a = 36 - a
             if send(f"direction_angle/{a}"):
                 engine_status[1] = a
@@ -465,17 +462,17 @@ class MainApp(MDApp):
                 throw("ERROR", "[C6] Sending backward direction_angle data failed!", "")
 
         # Sending the power - forward, backward or stop
-        if float(y) >= 0.64 and engine_status[0] is not 1:
+        if float(y) >= 0.64 and engine_status[0] != 1:
             if send("direction/forward"):
                 engine_status[0] = 1
             else:
                 throw("ERROR", "[C7] Sending forward direction data failed.", "")
-        elif float(y) <= -0.64 and engine_status[0] is not -1:
+        elif float(y) <= -0.64 and engine_status[0] != -1:
             if send("direction/backward"):
                 engine_status[0] = -1
             else:
                 throw("ERROR", "[C8] Sending backward direction data failed.", "")
-        elif -0.64 < float(y) < 0.64 and engine_status[0] is not 0:
+        elif -0.64 < float(y) < 0.64 and engine_status[0] != 0:
             if send("direction/stop"):
                 engine_status[0] = 0
             else:

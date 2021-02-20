@@ -1,6 +1,6 @@
 # Invisible Defender (Mobile)
 
-> Current Version: v2.0.1 | Last APK version: v2.0.0
+> Current Version: v2.0.2 | Last APK version: v2.0.2
 
 This repository made by İstanbul Üniversitesi-Cerrahpaşa Sustainable Energy Research Laboratuary BSc. Students. You must have server files (_invisible defender server_) in order to connect it from the application.
 
@@ -10,6 +10,9 @@ Contributors: @electricalgorithm and @sirtryingsomething
 ![Control Panel](https://github.com/electricalgorithm/invisible-defender/blob/main/assets-GIT/controlPanel.png?raw=true)
 
 ### Last Updates (TR)
+
+> 20 Feb 21: Önemli bir hata olan mobil uygulamaya (APK) derlendiğinde numpy sıkıntısı yok edildi. Görüntü aktarımındaki yavaşlık yüzünden çözünürlük 160x140'a düşürüldü. `assets-GIT` klasöründeki APK dosyası kaldırıldı, yeni versiyonlar "relase" olarak konulacak.
+>
 > 20 Feb 21: Programdaki genel fonksiyonlar yeni bir dosya olan `utils.py`'da toplandı. `config.py`'daki gereksiz değişkenler silindi. Bağlantının sunucudan kesilebilmesi için gerekli kod bloğu eklendi. Joystick'teki bir süre sonra ortaya çıkan hata düzeltildi. Ekranda çıkan bildirimler (toast) düzeltildi, `update_data()` fonksiyonun içindeki gereksiz kodlar temizlendi -- process'e eklendi. `is not` şeklinde hatalı yazılmış olan koşullar düzeltildi.
 >
 > 19 Feb 21: Program, mobil yazılım haline çevrildi. APK hazırlandı. *GÖRÜNTÜ AKTARIMI SORUNLU!*. PyCryptodome kütüphanesine yapılmış olan değişiklikler yok edildi. Requirements.txt güncellendi. Görüntü aktarımı için mobilde opencv sorun çıkarttığından struct/pickle koduna geçildi.
@@ -30,7 +33,7 @@ Contributors: @electricalgorithm and @sirtryingsomething
 
 ### What to do next? (TR)
 
-- [ ]  Kameranın görüntü aktardığı sunucu, mobilde işe yaramıyor. Numpy kütüphanesi `ImportError: dlopen failed:` hatası veriyor. Bunun düzeltilmesi için yeni bir görüntü paylaşımı algoritması kurulması gerek. (Acil!)
+- [x]  Kameranın görüntü aktardığı sunucu, mobilde işe yaramıyor. Numpy kütüphanesi `ImportError: dlopen failed:` hatası veriyor. Bunun düzeltilmesi için yeni bir görüntü paylaşımı algoritması kurulması gerek. 
 - [x] `is not` şeklinde yazılmış koşullar `=!`'a dönüşütürlmeli.
 - [ ] Kullanıcının şifresi hashlenip sunucuya yollanmalı ve sunucuda hashlenmiş hali tutulmalı.
 - [ ] Tüm veri aktarımı RSA ile yapılmasından ziyade, RSA ile handshake yapılmalı ve diğer iletişim paylaşılmış olan anahtar aracılığı ile AES ile yürütülmeli.
