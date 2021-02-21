@@ -1,5 +1,4 @@
 # CONFIG
-WINDOW_SIZE = (667, 375)
 FORMAT = "utf-8"
 LOGGING = True
 LOGFILE = "main"
