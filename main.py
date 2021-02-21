@@ -395,11 +395,15 @@ class AdminPanel(Screen):
 
     @staticmethod
     def quit():
-        send("CLIENT", "!dis", "False")
-        connection.close()
-        throw("INFO", "Connection closed. You can close the app now.", "")
-        sleep(3)
-        exit()
+        id_number = randint(11111, 99999)
+        message = message_creator(id_number, "CLIENT", "!dis", False)
+        message_encrypted = encrypt(message.encode(FORMAT))
+        num_of_bytes = connection.send(message_encrypted)
+        if num_of_bytes:
+            sleep(1)
+            connection.close()
+            throw("INFO", "Connection closed. You can close the app now.", "")
+            exit()
 
 
 class WinManager(ScreenManager):

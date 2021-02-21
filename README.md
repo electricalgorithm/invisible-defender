@@ -11,6 +11,8 @@ Contributors: @electricalgorithm and @sirtryingsomething
 
 ### Last Updates (TR)
 
+> 21 Feb 21: Giriş ekranı ilk açıldığında ekran yerleşimindeki sorun düzeltildi.Giriş kısmındaki başlık değiştirildi. Çarpı butonuna basmamıza rağmen kapanmamasının sebebinin thread oluşturması ve daha göndermeden kapanması olduğu düşünülerek gönderilen `!dis` mesajı ana process'te gönderilmeye başlandı. Kapanmama sorunu halloldu. (Teste ihtiyacı var!) 
+>
 > 21 Feb 21: İşleri karmaşıklaştıran ve gereksiz yere "sanki" bitlermiş gib gönderilen _byte stringler_ için yeni bir sistem geliştirildi. Bu sistem, `id:type:setting:value` şeklindedir. `id`, rastgele oluşturulmuş, 5 haneli bir tam sayıdır. `type`; INFO, ERROR gibi mesajın tipini kapsayan bir sayıdır. `setting`; `tempshield_status` gibi güncellenen verinin nereye ait olduğunu kapsayan bir sayıdır. `value` ise bu ayarlanmak isteyen verinin ayarlanacağı bilgidir. Tam sayı, boolean olabilir ya da string olabilir. Buna ek olarak giriş ekranındaki `user@IP:port`  girilmediği taktirde uygulamanının hata verip kapanması düzeltildi.
 >
 > 20 Feb 21: Önemli bir hata olan mobil uygulamaya (APK) derlendiğinde numpy sıkıntısı yok edildi. Görüntü aktarımındaki yavaşlık yüzünden çözünürlük 160x140'a düşürüldü. `assets-GIT` klasöründeki APK dosyası kaldırıldı, yeni versiyonlar "relase" olarak konulacak.
@@ -42,9 +44,9 @@ Contributors: @electricalgorithm and @sirtryingsomething
 - [x] `type_conversion` gibi genel fonksiyonlar ayrı bir Python dosyası olarak yazılmalı.
 - [x] ~~Tüm byte olarak hazırlanmış veriler, bitlere çevirilmeli.~~ Yeni bir sistem geliştirildi, bu sistem sayesinde ileride oluşabilecek sıkıntılar gidirilmesi düşünüldü.
 - [x] `username@IP:port` şeklinde olan giriş kısmına eğer düzgün bir şekilde girilmezse uygulamadan atıyor. Bunun yerine hata fırlatması ayarlanmalı.
-- [ ] Kapatma tuşuna basıldıktan sonra bazen karşı tarafa kapatma bilgisi gönderilmiyor, bu yüzden araçtaki bilgiler kapanmıyor. Düzeltilmeli.
+- [x] Kapatma tuşuna basıldıktan sonra bazen karşı tarafa kapatma bilgisi gönderilmiyor, bu yüzden araçtaki bilgiler kapanmıyor. Düzeltilmeli.
 - [ ] Kamera aktarımı da şifrelenmeli.
-- [ ] Giriş ekranındaki kutu, telefonda ilk kez açıldığnda görünmez bir pozisyonda oluyor. Düzeltilmeli.
+- [x] Giriş ekranındaki kutu, telefonda ilk kez açıldığnda görünmez bir pozisyonda oluyor. Düzeltilmeli.
 - [ ] Bir simge ve açılış ekranı görselleri hazırlanmalı.
 - [x] Başlıklar düzeltilmeli.
 
