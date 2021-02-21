@@ -46,5 +46,5 @@ Contributors: @electricalgorithm and @sirtryingsomething
 - [ ] Kamera aktarımı da şifrelenmeli.
 - [ ] Giriş ekranındaki kutu, telefonda ilk kez açıldığnda görünmez bir pozisyonda oluyor. Düzeltilmeli.
 - [ ] Bir simge ve açılış ekranı görselleri hazırlanmalı.
-- [ ] Başlıklar düzeltilmeli.
+- [x] Başlıklar düzeltilmeli.
 

@@ -417,7 +417,7 @@ class MainApp(MDApp):
         self.theme_cls.primary_palette = "Teal"
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_hue = "500"
-        self.title = "IUC Thermoelectricity Laboratory"
+        self.title = "Invisible Defender"
 
     def build(self):
         self.root = Builder.load_file("template.kv")
