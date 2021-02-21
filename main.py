@@ -23,12 +23,11 @@ from functools import partial
 # Cryptology
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-
 # ###########################################################################
 
 
 # Configs and Variables #####################################################
-__version__ = "2.0.2"  # For buildozer
+__version__ = "2.0.3"  # For buildozer
 waiting_conf = []
 process_list = []
 Window.size = WINDOW_SIZE
@@ -74,7 +73,6 @@ def try_to_connect(ip, port):
     return True, _connection, _key_pair, _public_rasp
 
 
-# noinspection PyTypeChecker
 def encrypt(message_to_send):
     public_key_rasp = RSA.import_key(public_rasp)
     encryptor = PKCS1_OAEP.new(public_key_rasp)
@@ -110,16 +108,16 @@ def receive():
                         exit()
 
                 continue
-            # message: [message code, message type, data type, data]
-            message = [data[0:5], type_conversion(data[5:8], False), data[8:11], data[11:17]]
+            # message -> id:type:setting:value
+            message = message_splitter(data.decode(FORMAT))
 
             if message[1] == "CONF":
                 for item in process_list:
                     if int(message[0]) == item["conf"]:
-                        threading.Thread(target=process, args=("in", item["type"], item["value"])).start()
+                        threading.Thread(target=process, args=(item["setting"], item["value"],)).start()
                         process_list.remove(item)
 
-            elif message[1] == "CLIENT" and message[2] == b'111':
+            elif message[1] == "CLIENT" and message[2] == "!dis" and not message[3]:
                 throw("ERROR", f"Connection closed by the server.", "")
                 connection.close()
                 exit(9)
@@ -128,15 +126,14 @@ def receive():
                 # Process adding to list
                 process_list.append({
                     "conf": int(message[0]),
-                    "type": message_converter(message[2], False, "type"),
-                    "value": message_converter(message[3], False, "value")
+                    "setting": message[2],
+                    "value": message[3]
                 })
 
                 # Sending confirmation message
-                type_code = type_conversion("CONF")
-                conf_message = message[0] + type_code + b'110' + b'00001'
-                conf_message = encrypt(conf_message)
-                thread_conf = threading.Thread(target=connection.send, args=(conf_message,), daemon=True)
+                conf_message = message_creator(message[0], "CONF", "confirmation", True)
+                encryped_conf_message = encrypt(conf_message.encode(FORMAT))
+                thread_conf = threading.Thread(target=connection.send, args=(encryped_conf_message,), daemon=True)
                 thread_conf.start()
 
         except ConnectionResetError:
@@ -149,30 +146,18 @@ def receive():
             break
 
 
-def send(message):
-    # example usage: send("temp_status/True")
-    # Message Template - there are no blanks: message-code message-type data-type  data
-    #                                            5 byte        3 byte    3 byte   5 byte
-    c_message = randint(11111, 99999)
-
-    if message == "!dis":
-        c_type = type_conversion("CLIENT")
-        message = message_converter(message, conversion_data="type")
-        message = f"{c_message}".encode(FORMAT) + c_type + message
-        message = encrypt(message)
-
-    else:
-        c_type = type_conversion("INFO")
-        message = message_converter(message)
-        process_list.append({
-            "conf": int(c_message),
-            "type": message_converter(message[0], False, "type"),
-            "value": message_converter(message[1], False, "value")
-        })
-        message = f"{c_message}".encode(FORMAT) + c_type + message[0] + message[1]
-        message = encrypt(message)
+def send(typey, setting, value):
+    # Creation of random id number.
+    id_number = randint(11111, 99999)
+    message = message_creator(id_number, typey, setting, value)
+    process_list.append({
+        "conf": int(id_number),
+        "setting": setting,
+        "value": value
+    })
+    message_encrypted = encrypt(message.encode(FORMAT))
     # Sending message via thread
-    thread_input = threading.Thread(target=connection.send, args=(message,), daemon=True)
+    thread_input = threading.Thread(target=connection.send, args=(message_encrypted,), daemon=True)
     thread_input.start()
     return True
 
@@ -181,54 +166,53 @@ def send(message):
 
 
 # Process Functions ############################################################
-def process(opt, sett, val):
+def process(sett, val):
     global tempshield_status, car_status, jammer_status, light_status, engine_status
 
-    if opt == "in":
-        if sett == "tempshield_status":
-            if val == "True":
-                tempshield_status = True
-                throw("INFO", "Temperature shield is activated.")
-                return True
-            elif val == "False":
-                tempshield_status = False
-                throw("INFO", "Temperature shield is deactivated.")
-                return True
-            else:
-                return False
-        elif sett == "jammer_status":
-            if val == "True":
-                jammer_status = True
-                throw("INFO", "Jammer is activated.")
-                return True
-            elif val == "False":
-                jammer_status = False
-                throw("INFO", "Jammer is deactivated.")
-                return True
-            else:
-                return False
-        elif sett == "light_status":
-            if val == "True":
-                light_status = True
-                throw("INFO", "Lights are activated.")
-                return True
-            elif val == "False":
-                light_status = False
-                throw("INFO", "Lights are deactivated.")
-                return True
-            else:
-                return False
-        elif sett == "car_status":
-            if val == "True":
-                car_status = True
-                throw("INFO", "Engine started.")
-                return True
-            elif val == "False":
-                car_status = False
-                throw("INFO", "Engine stopped.")
-                return True
-            else:
-                return False
+    if sett == "tempshield_status":
+        if val:
+            tempshield_status = True
+            throw("INFO", "Temperature shield is activated.")
+            return True
+        elif not val:
+            tempshield_status = False
+            throw("INFO", "Temperature shield is deactivated.")
+            return True
+        else:
+            return False
+    elif sett == "jammer_status":
+        if val:
+            jammer_status = True
+            throw("INFO", "Jammer is activated.")
+            return True
+        elif not val:
+            jammer_status = False
+            throw("INFO", "Jammer is deactivated.")
+            return True
+        else:
+            return False
+    elif sett == "light_status":
+        if val:
+            light_status = True
+            throw("INFO", "Lights are activated.")
+            return True
+        elif not val:
+            light_status = False
+            throw("INFO", "Lights are deactivated.")
+            return True
+        else:
+            return False
+    elif sett == "car_status":
+        if val:
+            car_status = True
+            throw("INFO", "Engine started.")
+            return True
+        elif not val:
+            car_status = False
+            throw("INFO", "Engine stopped.")
+            return True
+        else:
+            return False
 
 
 def update_data():
@@ -244,10 +228,16 @@ class MainWindow(Screen):
         global connection, mobile_keys, public_rasp
         global _IP_ADDR, _PORT, isUser
 
-        # Reading textboxes
-        username = self.ids.usernameID.text.split("@")[0]
-        _IP_ADDR = self.ids.usernameID.text.split("@")[1].split(":")[0]
-        _PORT = int(self.ids.usernameID.text.split("@")[1].split(":")[1])
+        try:
+            username = self.ids.usernameID.text.split("@")[0]
+            _IP_ADDR = self.ids.usernameID.text.split("@")[1].split(":")[0]
+            _PORT = int(self.ids.usernameID.text.split("@")[1].split(":")[1])
+        except IndexError:
+            throw("ERROR", "Username seems not right. Try to check the data you provided.")
+            return 1
+        except ValueError:
+            throw("ERROR", "Username seems not right. Try to check the data you provided.")
+            return 1
         password = self.ids.passwordID.text
 
         # Sending the user information
@@ -350,9 +340,9 @@ class AdminPanel(Screen):
 
     def temp_shield_toggle(self):
         global tempshield_status
-        msg_code = send(f"tempshield_status/{not tempshield_status}")
+        msg_code = send("INFO", "tempshield_status", not tempshield_status)
         if not msg_code:
-            throw("ERROR", "[1] Sending tempshield_status data failed!", "")
+            throw("ERROR", "Sending tempshield_status data failed!", "")
             return False
         if not tempshield_status:
             self.ids.temp_shield_toggle_icon.icon = "layers"
@@ -364,9 +354,9 @@ class AdminPanel(Screen):
 
     def jammer_toggle(self):
         global jammer_status
-        msg_code = send(f"jammer_status/{not jammer_status}")
+        msg_code = send("INFO", "jammer_status", not jammer_status)
         if not msg_code:
-            throw("ERROR", "[2] Sending jammer_status data failed!", "")
+            throw("ERROR", "Sending jammer_status data failed!", "")
             return False
         if not jammer_status:
             self.ids.jammer_toggle_icon.icon = "access-point-network"
@@ -378,9 +368,9 @@ class AdminPanel(Screen):
 
     def car_light_toggle(self):
         global light_status
-        msg_code = send(f"light_status/{not light_status}")
+        msg_code = send("INFO", "light_status", not light_status)
         if not msg_code:
-            throw("ERROR", "[3] Sending light_status data failed!", "")
+            throw("ERROR", "Sending light_status data failed!", "")
             return False
         if not light_status:
             self.ids.car_light_toggle_icon.icon = "car-light-high"
@@ -392,9 +382,9 @@ class AdminPanel(Screen):
 
     def car_engine_startstop(self):
         global car_status
-        msg_code = send(f"car_status/{not car_status}")
+        msg_code = send("INFO", "car_status", not car_status)
         if not msg_code:
-            throw("ERROR", "[4] Sending car_status data failed!", "")
+            throw("ERROR", "Sending car_status data failed!", "")
             return False
         if not car_status:
             self.ids.car_engine_startstop_icon.icon = "engine"
@@ -406,15 +396,15 @@ class AdminPanel(Screen):
 
     @staticmethod
     def quit():
-        send("!dis")
+        send("CLIENT", "!dis", "False")
         connection.close()
         throw("INFO", "Connection closed. You can close the app now.", "")
+        sleep(3)
         exit()
 
 
 class WinManager(ScreenManager):
     pass
-
 
 # ###########################################################################
 
@@ -450,33 +440,33 @@ class MainApp(MDApp):
         # with zero.
         # Ex. 190* turns 10*, 340* turns 160
         if 4 <= a <= 14 and engine_status[1] != a and engine_status[0] != 0:
-            if send(f"direction_angle/{a}"):
+            if send("INFO", "direction_angle", a):
                 engine_status[1] = a
             else:
-                throw("ERROR", "[C5] Sending forward direction_angle data failed!", "")
+                throw("ERROR", "Sending forward direction_angle data failed!", "")
         elif 32 >= a >= 22 and engine_status[1] != (36 - a) and engine_status[0] != 0:
             a = 36 - a
-            if send(f"direction_angle/{a}"):
+            if send("INFO", "direction_angle", a):
                 engine_status[1] = a
             else:
-                throw("ERROR", "[C6] Sending backward direction_angle data failed!", "")
+                throw("ERROR", "Sending backward direction_angle data failed!", "")
 
         # Sending the power - forward, backward or stop
         if float(y) >= 0.64 and engine_status[0] != 1:
-            if send("direction/forward"):
+            if send("INFO", "direction", "forward"):
                 engine_status[0] = 1
             else:
-                throw("ERROR", "[C7] Sending forward direction data failed.", "")
+                throw("ERROR", "Sending forward direction data failed.", "")
         elif float(y) <= -0.64 and engine_status[0] != -1:
-            if send("direction/backward"):
+            if send("INFO", "direction", "backward"):
                 engine_status[0] = -1
             else:
-                throw("ERROR", "[C8] Sending backward direction data failed.", "")
+                throw("ERROR", "Sending backward direction data failed.", "")
         elif -0.64 < float(y) < 0.64 and engine_status[0] != 0:
-            if send("direction/stop"):
+            if send("INFO", "direction", "stop"):
                 engine_status[0] = 0
             else:
-                throw("ERROR", "[C9] Sending stop direction data failed.", "")
+                throw("ERROR", "Sending stop direction data failed.", "")
 
 
 if __name__ == "__main__":

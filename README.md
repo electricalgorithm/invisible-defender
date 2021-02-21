@@ -1,6 +1,6 @@
 # Invisible Defender (Mobile)
 
-> Current Version: v2.0.2 | Last APK version: v2.0.2
+> Current Version: v2.0.3 | Last APK version: v2.0.2
 
 This repository made by İstanbul Üniversitesi-Cerrahpaşa Sustainable Energy Research Laboratuary BSc. Students. You must have server files (_invisible defender server_) in order to connect it from the application.
 
@@ -11,6 +11,8 @@ Contributors: @electricalgorithm and @sirtryingsomething
 
 ### Last Updates (TR)
 
+> 21 Feb 21: İşleri karmaşıklaştıran ve gereksiz yere "sanki" bitlermiş gib gönderilen _byte stringler_ için yeni bir sistem geliştirildi. Bu sistem, `id:type:setting:value` şeklindedir. `id`, rastgele oluşturulmuş, 5 haneli bir tam sayıdır. `type`; INFO, ERROR gibi mesajın tipini kapsayan bir sayıdır. `setting`; `tempshield_status` gibi güncellenen verinin nereye ait olduğunu kapsayan bir sayıdır. `value` ise bu ayarlanmak isteyen verinin ayarlanacağı bilgidir. Tam sayı, boolean olabilir ya da string olabilir. Buna ek olarak giriş ekranındaki `user@IP:port`  girilmediği taktirde uygulamanının hata verip kapanması düzeltildi.
+>
 > 20 Feb 21: Önemli bir hata olan mobil uygulamaya (APK) derlendiğinde numpy sıkıntısı yok edildi. Görüntü aktarımındaki yavaşlık yüzünden çözünürlük 160x140'a düşürüldü. `assets-GIT` klasöründeki APK dosyası kaldırıldı, yeni versiyonlar "relase" olarak konulacak.
 >
 > 20 Feb 21: Programdaki genel fonksiyonlar yeni bir dosya olan `utils.py`'da toplandı. `config.py`'daki gereksiz değişkenler silindi. Bağlantının sunucudan kesilebilmesi için gerekli kod bloğu eklendi. Joystick'teki bir süre sonra ortaya çıkan hata düzeltildi. Ekranda çıkan bildirimler (toast) düzeltildi, `update_data()` fonksiyonun içindeki gereksiz kodlar temizlendi -- process'e eklendi. `is not` şeklinde hatalı yazılmış olan koşullar düzeltildi.
@@ -38,8 +40,9 @@ Contributors: @electricalgorithm and @sirtryingsomething
 - [ ] Kullanıcının şifresi hashlenip sunucuya yollanmalı ve sunucuda hashlenmiş hali tutulmalı.
 - [ ] Tüm veri aktarımı RSA ile yapılmasından ziyade, RSA ile handshake yapılmalı ve diğer iletişim paylaşılmış olan anahtar aracılığı ile AES ile yürütülmeli.
 - [x] `type_conversion` gibi genel fonksiyonlar ayrı bir Python dosyası olarak yazılmalı.
-- [ ] Tüm byte olarak hazırlanmış veriler, bitlere çevirilmeli.
-- [ ] `username@IP:port` şeklinde olan giriş kısmına eğer düzgün bir şekilde girilmezse uygulamadan atıyor. Bunun yerine hata fırlatması ayarlanmalı.
+- [x] ~~Tüm byte olarak hazırlanmış veriler, bitlere çevirilmeli.~~ Yeni bir sistem geliştirildi, bu sistem sayesinde ileride oluşabilecek sıkıntılar gidirilmesi düşünüldü.
+- [x] `username@IP:port` şeklinde olan giriş kısmına eğer düzgün bir şekilde girilmezse uygulamadan atıyor. Bunun yerine hata fırlatması ayarlanmalı.
+- [ ] Kapatma tuşuna basıldıktan sonra bazen karşı tarafa kapatma bilgisi gönderilmiyor, bu yüzden araçtaki bilgiler kapanmıyor. Düzeltilmeli.
 - [ ] Kamera aktarımı da şifrelenmeli.
 - [ ] Giriş ekranındaki kutu, telefonda ilk kez açıldığnda görünmez bir pozisyonda oluyor. Düzeltilmeli.
 - [ ] Bir simge ve açılış ekranı görselleri hazırlanmalı.
