@@ -1,6 +1,6 @@
 # Invisible Defender (Mobile)
 
-> Current Version: v2.0.3 | Last APK version: v2.0.2
+> Current Version: v2.0.4 | Last APK version: v2.0.2
 
 This repository made by İstanbul Üniversitesi-Cerrahpaşa Sustainable Energy Research Laboratuary BSc. Students. You must have server files (_invisible defender server_) in order to connect it from the application.
 
