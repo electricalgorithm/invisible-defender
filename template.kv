@@ -22,13 +22,13 @@ WinManager:
     MDCard:
         orientation: "vertical"
         padding: "20dp"
-        spacing: 20
+        spacing: "20dp"
         size_hint: None, None
-        size: "300dp", "350dp"
+        size: "300dp", "300dp"
         pos_hint: {"center_x": .5, "center_y": .5}
 
         MDLabel:
-            text: "IUC ThermoelecLab"
+            text: "Invisible Defender"
             theme_text_color: "Primary"
             halign: "center"
             valign: "top"
@@ -37,7 +37,7 @@ WinManager:
 
         MDBoxLayout:
             orientation: "vertical"
-            spacing: "-1dp"
+
             adaptive_height: True
 
             MDTextField:
@@ -52,7 +52,7 @@ WinManager:
                 multiline: False
 
         MDRaisedButton:
-            text: "Get In"
+            text: "Log In"
             text_color: 1,1,1,1
             md_bg_color: .33, .33, .33, 1
             pos_hint: {"center_x": .5, "center_y": .5}
@@ -171,12 +171,6 @@ WinManager:
                     pad_line_color:         app.theme_cls.primary_dark
 
 <MenuPanel>:
-    on_pre_enter:
-        toolbar_settings.remove_notch()
-        toolbar_settings_2.remove_notch()
-        self.update_logs()
-        self.update_peltiers()
-
     NavigationLayout:
         ScreenManager:
             id: screen_manager
