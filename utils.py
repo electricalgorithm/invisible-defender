@@ -87,6 +87,8 @@ def setting_num2str(setting):
         return "peltier_back"
     elif setting == 15:
         return "peltier_top"
+    elif setting == 16:
+        return "!dis"
     else:
         return 0
 

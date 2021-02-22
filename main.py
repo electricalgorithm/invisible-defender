@@ -23,11 +23,10 @@ from functools import partial
 # Cryptology
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-# ###########################################################################
 
 
 # Configs and Variables #####################################################
-__version__ = "2.0.4"  # For buildozer
+__version__ = "2.0.5"  # For buildozer
 waiting_conf = []
 process_list = []
 car_status = 0
@@ -41,49 +40,6 @@ connection = None
 _PORT = 0
 _IP_ADDR = ""
 isUser = False
-############################################################################
-
-
-# Networking Functions ######################################################
-def try_to_connect(ip, port):
-    is_error = False
-    _connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    try:
-        _connection.connect((ip, port))
-    except OSError as error:
-        if error.errno == 111:
-            throw("INFO", f"Connection refused. Try to check the data you provided.", is_toasted=True)
-        else:
-            throw("ERROR", error)
-        is_error = True
-    except OverflowError:
-        throw("INFO", f"Connection refused. Try to check the data you provided.", is_toasted=True)
-        is_error = True
-
-    if is_error:
-        return False, False, False, False
-
-    _key_pair = RSA.generate(2048)
-    _public_mobile = _key_pair.publickey().export_key()
-    _connection.sendto(_public_mobile, (ip, port))
-    _public_rasp = _connection.recv(512)
-
-    return True, _connection, _key_pair, _public_rasp
-
-
-def encrypt(message_to_send):
-    public_key_rasp = RSA.import_key(public_rasp)
-    encryptor = PKCS1_OAEP.new(public_key_rasp)
-    message_to_send = encryptor.encrypt(message_to_send)
-    return message_to_send
-
-
-def decrypt(received_data):
-    private_key_mobile = RSA.import_key(mobile_keys.export_key())
-    decryptor = PKCS1_OAEP.new(private_key_mobile)
-    received_data = decryptor.decrypt(received_data)
-    return received_data
 
 
 def receive():
@@ -94,7 +50,7 @@ def receive():
             data = connection.recv(512)
             if data:
                 try:
-                    data = decrypt(data)
+                    data = MainApp.decrypt(data)
                 except Exception as error:
                     continue
                 throw("INFO", f"Received! {data}", "", is_toasted=False)
@@ -105,7 +61,6 @@ def receive():
                         connection.close()
                         throw("ERROR", "Connection lost with server. You must restart the app.", "")
                         exit()
-
                 continue
             # message -> id:type:setting:value
             message = message_splitter(data.decode(FORMAT))
@@ -119,19 +74,13 @@ def receive():
             elif message[1] == "CLIENT" and message[2] == "!dis" and not message[3]:
                 throw("ERROR", f"Connection closed by the server.", "")
                 connection.close()
-                exit(9)
 
             else:
-                # Process adding to list
-                process_list.append({
-                    "conf": int(message[0]),
-                    "setting": message[2],
-                    "value": message[3]
-                })
+                threading.Thread(target=process, args=(message[2], message[3],)).start()
 
                 # Sending confirmation message
                 conf_message = message_creator(message[0], "CONF", "confirmation", True)
-                encryped_conf_message = encrypt(conf_message.encode(FORMAT))
+                encryped_conf_message = MainApp.encrypt(conf_message.encode(FORMAT))
                 thread_conf = threading.Thread(target=connection.send, args=(encryped_conf_message,), daemon=True)
                 thread_conf.start()
 
@@ -154,17 +103,13 @@ def send(typey, setting, value):
         "setting": setting,
         "value": value
     })
-    message_encrypted = encrypt(message.encode(FORMAT))
+    message_encrypted = MainApp.encrypt(message.encode(FORMAT))
     # Sending message via thread
     thread_input = threading.Thread(target=connection.send, args=(message_encrypted,), daemon=True)
     thread_input.start()
     return True
 
 
-# ###########################################################################
-
-
-# Process Functions ############################################################
 def process(sett, val):
     global tempshield_status, car_status, jammer_status, light_status, engine_status
 
@@ -212,17 +157,62 @@ def process(sett, val):
             return True
         else:
             return False
-
-
-def update_data():
-    pass
-
-# ###########################################################################
+    elif sett == "battery_percentage":
+        if isinstance(val, int):
+            MDApp.get_running_app().root.ids.apanel.ids.battery_item.text = str(val) + "%"
+    elif sett == "outside_temperature":
+        if isinstance(val, int):
+            MDApp.get_running_app().root.ids.apanel.ids.outside_temp_item.text = str(val) + "°C"
+    elif sett == "inside_temperature":
+        if isinstance(val, int):
+            MDApp.get_running_app().root.ids.apanel.ids.inside_temp_item.text = str(val) + "°C"
+    elif sett == "peltier_right":
+        if isinstance(val, int):
+            MDApp.get_running_app().root.ids.apanel.ids.pel_right_item.text = "pR: " + str(val) + "°C"
+    elif sett == "peltier_left":
+        if isinstance(val, int):
+            MDApp.get_running_app().root.ids.apanel.ids.pel_left_item.text = "pL: " + str(val) + "°C"
+    elif sett == "peltier_top":
+        if isinstance(val, int):
+            MDApp.get_running_app().root.ids.apanel.ids.pel_top_item.text = "pT: " + str(val) + "°C"
+    elif sett == "peltier_back":
+        if isinstance(val, int):
+            MDApp.get_running_app().root.ids.apanel.ids.pel_back_item.text = "pB: " + str(val) + "°C"
+    else:
+        pass
 
 
 # Screens ###################################################################
 class MainWindow(Screen):
 
+    @staticmethod
+    def try_to_connect(ip, port):
+        is_error = False
+        _connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        try:
+            _connection.connect((ip, port))
+        except OSError as error:
+            if error.errno == 111:
+                throw("INFO", f"Connection refused. Try to check the data you provided.", is_toasted=True)
+            else:
+                throw("ERROR", error)
+            is_error = True
+        except OverflowError:
+            throw("INFO", f"Connection refused. Try to check the data you provided.", is_toasted=True)
+            is_error = True
+
+        if is_error:
+            return False, False, False, False
+
+        _key_pair = RSA.generate(2048)
+        _public_mobile = _key_pair.publickey().export_key()
+        _connection.sendto(_public_mobile, (ip, port))
+        _public_rasp = _connection.recv(512)
+
+        return True, _connection, _key_pair, _public_rasp
+
+    @property
     def login(self):
         global connection, mobile_keys, public_rasp
         global _IP_ADDR, _PORT, isUser
@@ -240,16 +230,16 @@ class MainWindow(Screen):
         password = self.ids.passwordID.text
 
         # Sending the user information
-        status, connection, mobile_keys, public_rasp = try_to_connect(_IP_ADDR, _PORT)
+        status, connection, mobile_keys, public_rasp = self.try_to_connect(_IP_ADDR, _PORT)
 
         if status:
-            connection.send(encrypt(
+            connection.send(MainApp.encrypt(
                 bytes(username + "/" + password, FORMAT)
             ))
 
             # Receiving the connection status
             data = connection.recv(512)
-            data = decrypt(data)
+            data = MainApp.decrypt(data)
             if data == b'01':
                 isUser = True
                 # Receiving
@@ -273,8 +263,7 @@ class AdminPanel(Screen):
         super().__init__(**kwargs)
         video_thread = threading.Thread(target=self.camera_receiver, daemon=True)
         video_thread.start()
-        update_thread = threading.Thread(target=update_data, daemon=True)
-        update_thread.start()
+
 
     def change_frame(self, frame, dt):
         # create a Texture the correct size and format for the frame
@@ -397,7 +386,7 @@ class AdminPanel(Screen):
     def quit():
         id_number = randint(11111, 99999)
         message = message_creator(id_number, "CLIENT", "!dis", False)
-        message_encrypted = encrypt(message.encode(FORMAT))
+        message_encrypted = MainApp.encrypt(message.encode(FORMAT))
         num_of_bytes = connection.send(message_encrypted)
         if num_of_bytes:
             sleep(1)
@@ -428,6 +417,20 @@ class MainApp(MDApp):
         joystick = self.root.ids.apanel.ids.directionjoystick
         joystick.bind(pad=self.joystick_direction)
         return 0
+
+    @staticmethod
+    def encrypt(message_to_send):
+        public_key_rasp = RSA.import_key(public_rasp)
+        encryptor = PKCS1_OAEP.new(public_key_rasp)
+        message_to_send = encryptor.encrypt(message_to_send)
+        return message_to_send
+
+    @staticmethod
+    def decrypt(received_data):
+        private_key_mobile = RSA.import_key(mobile_keys.export_key())
+        decryptor = PKCS1_OAEP.new(private_key_mobile)
+        received_data = decryptor.decrypt(received_data)
+        return received_data
 
     # engine_status variable in the function necessary to know old data.
     # Direction has been handing here and will control motors in server.

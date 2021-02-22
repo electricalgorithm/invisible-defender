@@ -14,6 +14,7 @@ WinManager:
     transition: CardTransition()
     MainWindow:
         name: "loginPanel"
+        id: lpanel
     AdminPanel:
         name: "adminPanel"
         id: apanel
@@ -57,7 +58,7 @@ WinManager:
             md_bg_color: .33, .33, .33, 1
             pos_hint: {"center_x": .5, "center_y": .5}
             on_release:
-                app.root.current = "adminPanel" if not root.login() else "loginPanel"
+                app.root.current = "adminPanel" if not root.login else "loginPanel"
                 root.manager.transition.direction = "up"
 
 <AdminPanel>:
@@ -121,31 +122,38 @@ WinManager:
             ScrollView:
                 MDList:
                     OneLineIconListItem:
-                        text: "%89.7" if self.width > 120 else ""
+                        id: battery_item
+                        text: "~"
                         IconLeftWidget:
                             icon: "battery-80"
                     OneLineIconListItem:
-                        text: "23'C" if self.width > 120 else ""
+                        id: outside_temp_item
+                        text: "~"
                         IconLeftWidget:
                             icon: "weather-sunny"
                     OneLineIconListItem:
-                        text: "47'C" if self.width > 120 else ""
+                        id: inside_temp_item
+                        text: "~"
                         IconLeftWidget:
                             icon: "car-defrost-rear"
                     OneLineIconListItem:
-                        text: "PR: 15'C" if self.width > 120 else ""
+                        id: pel_right_item
+                        text: "~"
                         IconLeftWidget:
                             icon: "border-right"
                     OneLineIconListItem:
-                        text: "PL: 13'C" if self.width > 120 else ""
+                        id: pel_left_item
+                        text: "~"
                         IconLeftWidget:
                             icon: "border-left"
                     OneLineIconListItem:
-                        text: "PT: 19'C" if self.width > 120 else ""
+                        id: pel_top_item
+                        text: "~"
                         IconLeftWidget:
                             icon: "border-top"
                     OneLineIconListItem:
-                        text: "PB: 10'C" if self.width > 120 else ""
+                        id: pel_back_item
+                        text: "~"
                         IconLeftWidget:
                             icon: "border-bottom"
 

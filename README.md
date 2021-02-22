@@ -1,6 +1,6 @@
 # Invisible Defender (Mobile)
 
-> Current Version: v2.0.4 | Last APK version: v2.0.2
+> Current Version: v2.0.5 | Last APK version: v2.0.2
 
 This repository made by İstanbul Üniversitesi-Cerrahpaşa Sustainable Energy Research Laboratuary BSc. Students. You must have server files (_invisible defender server_) in order to connect it from the application.
 
@@ -11,6 +11,8 @@ Contributors: @electricalgorithm and @sirtryingsomething
 
 ### Last Updates (TR)
 
+> 22 Feb 21: Yan bardaki pil, sıcaklık gibi göstergeler için `exc` komutunun kullanılması için zemin hazırlandı, sistem kuruldu. `template.kv`deki bazı hatalar giderildi. Bazı fonksiyonlar ilgili sınıfların altına statik metot olarak eklendi.
+>
 > 21 Feb 21: Giriş ekranı ilk açıldığında ekran yerleşimindeki sorun düzeltildi.Giriş kısmındaki başlık değiştirildi. Çarpı butonuna basmamıza rağmen kapanmamasının sebebinin thread oluşturması ve daha göndermeden kapanması olduğu düşünülerek gönderilen `!dis` mesajı ana process'te gönderilmeye başlandı. Kapanmama sorunu halloldu. (Teste ihtiyacı var!) 
 >
 > 21 Feb 21: İşleri karmaşıklaştıran ve gereksiz yere "sanki" bitlermiş gib gönderilen _byte stringler_ için yeni bir sistem geliştirildi. Bu sistem, `id:type:setting:value` şeklindedir. `id`, rastgele oluşturulmuş, 5 haneli bir tam sayıdır. `type`; INFO, ERROR gibi mesajın tipini kapsayan bir sayıdır. `setting`; `tempshield_status` gibi güncellenen verinin nereye ait olduğunu kapsayan bir sayıdır. `value` ise bu ayarlanmak isteyen verinin ayarlanacağı bilgidir. Tam sayı, boolean olabilir ya da string olabilir. Buna ek olarak giriş ekranındaki `user@IP:port`  girilmediği taktirde uygulamanının hata verip kapanması düzeltildi.
@@ -49,4 +51,5 @@ Contributors: @electricalgorithm and @sirtryingsomething
 - [x] Giriş ekranındaki kutu, telefonda ilk kez açıldığnda görünmez bir pozisyonda oluyor. Düzeltilmeli.
 - [ ] Bir simge ve açılış ekranı görselleri hazırlanmalı.
 - [x] Başlıklar düzeltilmeli.
+- [x] Yan bardaki verilerin güncellenebilmesi için sistem kurulmalı.
 
