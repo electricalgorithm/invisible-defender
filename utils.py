@@ -4,6 +4,15 @@ from kivymd.toast import toast
 
 
 def throw(msg_type, message, conn=None, is_toasted=True):
+    """
+    A function to both log and toast messages.
+
+    :param msg_type: string, "INFO", "ERROR"...
+    :param message: string
+    :param conn:
+    :param is_toasted: Default True
+    :return:
+    """
     logfile = open(f"{LOGFILE}.log", "a")
     _time = asctime(localtime(time()))
     if conn:
@@ -20,6 +29,12 @@ def throw(msg_type, message, conn=None, is_toasted=True):
 
 
 def setting_str2num(setting):
+    """
+    A function to convert SETTING strigns to right numbers.
+
+    :param setting: string
+    :return: integer
+    """
     if setting == "tempshield_status":
         return 1
     elif setting == "jammer_status":
@@ -57,6 +72,12 @@ def setting_str2num(setting):
 
 
 def setting_num2str(setting):
+    """
+    A function to convert SETTING numbers to right strings.
+
+    :param setting: integer
+    :return: string
+    """
     if setting == 1:
         return "tempshield_status"
     elif setting == 2:
@@ -94,6 +115,12 @@ def setting_num2str(setting):
 
 
 def type_str2num(typey):
+    """
+    A function to convert TYPE strings to right numbers.
+
+    :param typey: string
+    :return: string
+    """
     if typey == "ERROR":
         return 1
     elif typey == "INFO":
@@ -111,6 +138,12 @@ def type_str2num(typey):
 
 
 def type_num2str(typey):
+    """
+    A function to convery TYPE numbers to right strings.
+
+    :param typey: int
+    :return: string
+    """
     if typey == 1:
         return "ERROR"
     elif typey == 2:
@@ -128,6 +161,16 @@ def type_num2str(typey):
 
 
 def message_creator(id_number, type_str, setting_str, value):
+    """
+    A function to create a string with combining params via ":"
+    delimeter. This function is inverse of message_splitter.
+
+    :param id_number: int
+    :param type_str: str
+    :param setting_str: str
+    :param value: str/int/bool
+    :return: str
+    """
     message = str(id_number) + ":" + \
               str(type_str2num(type_str)) + ":" + \
               str(setting_str2num(setting_str)) + ":" + \
@@ -136,6 +179,14 @@ def message_creator(id_number, type_str, setting_str, value):
 
 
 def message_splitter(message):
+    """
+    A function to split string message which contains ":"
+    delimeter into 4-indexed list. This function is inverse
+    of message_creator.
+
+    :param message: str
+    :return: [ID (int), Type (str), Setting (str), Value (str/int/bool)]
+    """
     array = message.split(":")
     array[0] = int(array[0])
     array[1] = type_num2str(int(array[1]))
