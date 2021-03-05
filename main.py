@@ -26,7 +26,7 @@ from Crypto.Cipher import PKCS1_OAEP, AES
 from Crypto.Hash import SHA256
 
 # Version Information
-__version__ = "2.0.6"
+__version__ = "2.0.7"
 
 
 class MainWindow(Screen):
@@ -72,8 +72,7 @@ class MainWindow(Screen):
 
         # Trying to connect given address and port.
         try:
-            App.connection.connect((App.conn_ip_addr,
-                                                        App.conn_port))
+            App.connection.connect((App.conn_ip_addr, App.conn_port))
         except OSError as error:
             if error.errno == 111:
                 throw("ERROR", f"Connection refused. Try to check the data you provided.", is_toasted=True)
@@ -87,9 +86,7 @@ class MainWindow(Screen):
             return False
 
         # Sending mobile's public key to server
-        _ans = App.connection.sendto(App.public_key,
-                                                         (App.conn_ip_addr,
-                                                          App.conn_port))
+        _ans = App.connection.sendto(App.public_key, (App.conn_ip_addr, App.conn_port))
         if not _ans:
             throw("ERROR", f"Couldn't send public key to the server.", is_toasted=True)
             App.is_connected = False
@@ -112,17 +109,14 @@ class MainWindow(Screen):
         login_details = [encryptor_rsa.encrypt(username.encode(FORMAT)), encryptor_rsa.encrypt(hasher.digest())]
 
         # Sending username to server
-        _ans = App.connection.sendto(login_details[0],
-                                                         (App.conn_ip_addr,
-                                                          App.conn_port))
+        _ans = App.connection.sendto(login_details[0], (App.conn_ip_addr, App.conn_port))
         if not _ans:
             throw("ERROR", f"Couldn't send login details to the server.", is_toasted=True)
             App.is_connected = False
             return False
 
         # Sending password to server
-        _ans = App.connection.sendto(login_details[1], (App.conn_ip_addr,
-                                                                            App.conn_port))
+        _ans = App.connection.sendto(login_details[1], (App.conn_ip_addr, App.conn_port))
         if not _ans:
             throw("ERROR", f"Couldn't send login details to the server.", is_toasted=True)
             App.is_connected = False
@@ -168,12 +162,14 @@ class AdminPanel(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.resolution = (160, 120)
+        # Starting threading for camera receiver
         video_thread = threading.Thread(target=self.camera_receiver, daemon=True)
         video_thread.start()
 
     def change_frame(self, frame, dt):
         # create a Texture the correct size and format for the frame
-        texture = Texture.create(size=(160, 120), colorfmt='rgb')
+        texture = Texture.create(size=self.resolution, colorfmt='rgb')
         # copy the frame data into the texture
         texture.blit_buffer(frame, colorfmt='rgb', bufferfmt='ubyte')
         texture.flip_vertical()
@@ -181,7 +177,7 @@ class AdminPanel(Screen):
 
     def camera_receiver(self):
         data = b''
-        payload_size = struct.calcsize("Q")
+        payload_size = struct.calcsize("Q") + struct.calcsize("I") * 2
         waited_cycle = 0  # waited_cycle is the variable that holds cycles for connection tries.
         connection_camera = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -212,9 +208,13 @@ class AdminPanel(Screen):
                     continue
                 data += packet
 
-            # Unpacking frame's size, which is data[:payload_size], with struct module.
-            frame_size_packed = data[:payload_size]
-            frame_size = struct.unpack("Q", frame_size_packed)[0]
+            # Unpacking frame's size and resolution, which is data[:payload_size], with struct module.
+            frame_size_and_resolution_packed = data[:payload_size]
+
+            # Frame size unpacking
+            unpacked_tuple = struct.unpack("IIQ", frame_size_and_resolution_packed)
+            self.resolution = (unpacked_tuple[0], unpacked_tuple[1])
+            frame_size = unpacked_tuple[2]
             data = data[payload_size:]  # Eliminating the frame size from received message.
 
             # Receiving message and combine it with older ones if there's space to frame_size.
@@ -482,7 +482,7 @@ class MainApp(MDApp):
                         mac_tag = data[16:32]
                         encrypted_message = data[32:]
                         data = App.decrypt(nonce, mac_tag, encrypted_message)
-                    except Exception as error:
+                    except Exception:
                         continue
                     throw("INFO", f"Received! {data}", "", is_toasted=False)
 
