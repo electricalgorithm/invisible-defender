@@ -1,6 +1,8 @@
+![Logo](https://github.com/electricalgorithm/invisible-defender/blob/main/assets/icon@3x.png?raw=true)
+
 # Invisible Defender (Mobile)
 
-> Current Version: v2.0.6 | Last APK version: v2.0.6
+> Current Version: v2.0.7 | Last APK version: v2.0.6
 
 This repository made by İstanbul Üniversitesi-Cerrahpaşa Sustainable Energy Research Laboratuary BSc. Students. You must have server files (_invisible defender server_) in order to connect it from the application.
 
@@ -51,7 +53,7 @@ Contributors: @electricalgorithm and @sirtryingsomething
 - [x] Kapatma tuşuna basıldıktan sonra bazen karşı tarafa kapatma bilgisi gönderilmiyor, bu yüzden araçtaki bilgiler kapanmıyor. Düzeltilmeli.
 - [ ] Kamera aktarımı da şifrelenmeli.
 - [x] Giriş ekranındaki kutu, telefonda ilk kez açıldığnda görünmez bir pozisyonda oluyor. Düzeltilmeli.
-- [ ] Bir simge ve açılış ekranı görselleri hazırlanmalı.
+- [x] Bir simge ve açılış ekranı görselleri hazırlanmalı.
 - [x] Başlıklar düzeltilmeli.
 - [x] Yan bardaki verilerin güncellenebilmesi için sistem kurulmalı.
 - [ ] `Stop` komutu gittiğinde `Untrusted` hatası veriyor. Düzeltilmesi gerek.
