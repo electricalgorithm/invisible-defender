@@ -1,5 +1,3 @@
-<img src="https://github.com/electricalgorithm/invisible-defender/blob/main/assets/icon@3x.png?raw=true" alt="Logo" style="zoom: 10%" />
-
 # Invisible Defender (Mobile)
 
 > Current Version: v2.0.7 | Last APK version: v2.0.6
