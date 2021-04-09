@@ -1,4 +1,4 @@
-![Logo](https://github.com/electricalgorithm/invisible-defender/blob/main/assets/icon@3x.png?raw=true)
+<img src="https://github.com/electricalgorithm/invisible-defender/blob/main/assets/icon@3x.png?raw=true" alt="Logo" style="zoom: 10%" />
 
 # Invisible Defender (Mobile)
 
